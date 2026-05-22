@@ -22,6 +22,10 @@ export class Translator {
 
     // Frases comunes
     private frasesComunesEnEs: Record<string, string> = {
+        'hola mi nombre es': 'hello my name is',
+        'hola me llamo': 'hello my name is',
+        'mi nombre es': 'my name is',
+        'me llamo': 'my name is',
         'hola': 'hello',
         'buenos días': 'good morning',
         'buenas tardes': 'good afternoon',
@@ -40,8 +44,6 @@ export class Translator {
         '¿dónde vives?': 'where do you live?',
         'me gusta': 'i like',
         'no me gusta': 'i do not like',
-        'me llamo': 'my name is',
-        'mi nombre es': 'my name is',
         '¿qué hora es?': 'what time is it?',
         'hasta luego': 'see you later',
         'hasta mañana': 'see you tomorrow',
@@ -69,6 +71,8 @@ export class Translator {
     };
 
     private frasesComunesEsEn: Record<string, string> = {
+        'hello my name is': 'hola mi nombre es',
+        'my name is': 'me llamo',
         'hello': 'hola',
         'hi': 'hola',
         'good morning': 'buenos días',
@@ -98,7 +102,6 @@ export class Translator {
         'i like': 'me gusta',
         'i do not like': 'no me gusta',
         'i don\'t like': 'no me gusta',
-        'my name is': 'me llamo',
         'what time is it?': '¿qué hora es?',
         'what time is it': '¿qué hora es?',
         'see you later': 'hasta luego',
@@ -213,26 +216,27 @@ export class Translator {
 
     private traducirPalabraPorPalabra(texto: string, direccion: 'en-es' | 'es-en'): string {
         const palabras = texto.split(/(\s+)/);
-
         let resultado = '';
-        let i = 0;
 
-        while (i < palabras.length) {
+        for (let i = 0; i < palabras.length; i++) {
             const palabra = palabras[i];
 
-            // Si es espacio en blanco, mantenerlo
+            // Mantener espacios en blanco
             if (palabra.trim() === '') {
-                resultado += palabra;
-                i++;
+                resultado += ' ';
                 continue;
             }
 
-            // Intentar frases de 3 palabras
-            if (i + 4 < palabras.length) {
-                const frase3 = (palabra + palabras[i+1] + palabras[i+2]).toLowerCase().trim();
+            // Intentar frases de 4 palabras
+            if (i + 6 < palabras.length) {
+                const frase = [
+                    palabras[i], palabras[i+1], palabras[i+2], palabras[i+3]
+                ].join(' ').toLowerCase().trim().replace(/\s+/g, ' ');
+
                 const traduccion = direccion === 'es-en'
-                    ? this.frasesComunesEnEs[frase3]
-                    : this.frasesComunesEsEn[frase3];
+                    ? this.frasesComunesEnEs[frase]
+                    : this.frasesComunesEsEn[frase];
+
                 if (traduccion) {
                     resultado += traduccion;
                     i += 3;
@@ -240,12 +244,16 @@ export class Translator {
                 }
             }
 
-            // Intentar frases de 2 palabras
-            if (i + 2 < palabras.length) {
-                const frase2 = (palabra + ' ' + palabras[i+1]).toLowerCase().trim();
+            // Intentar frases de 3 palabras
+            if (i + 4 < palabras.length) {
+                const frase = [
+                    palabras[i], palabras[i+1], palabras[i+2]
+                ].join(' ').toLowerCase().trim().replace(/\s+/g, ' ');
+
                 const traduccion = direccion === 'es-en'
-                    ? this.frasesComunesEnEs[frase2]
-                    : this.frasesComunesEsEn[frase2];
+                    ? this.frasesComunesEnEs[frase]
+                    : this.frasesComunesEsEn[frase];
+
                 if (traduccion) {
                     resultado += traduccion;
                     i += 2;
@@ -253,15 +261,35 @@ export class Translator {
                 }
             }
 
-            // Traducir palabra individual
+            // Intentar frases de 2 palabras
+            if (i + 2 < palabras.length) {
+                const frase = [
+                    palabras[i], palabras[i+1]
+                ].join(' ').toLowerCase().trim().replace(/\s+/g, ' ');
+
+                const traduccion = direccion === 'es-en'
+                    ? this.frasesComunesEnEs[frase]
+                    : this.frasesComunesEsEn[frase];
+
+                if (traduccion) {
+                    resultado += traduccion;
+                    i += 1;
+                    continue;
+                }
+            }
+
+// Traducir palabra individual
             const palabraLimpia = palabra.replace(/[.,!?;:¿¡]$/g, '');
             const puntuacionFinal = palabra.match(/[.,!?;:¿¡]+$/g) || [''];
             const puntuacionInicial = palabra.match(/^[¿¡]+/g) || [''];
 
             const traduccion = this.dictionary.traducirPalabra(palabraLimpia, direccion);
-            resultado += puntuacionInicial[0] + traduccion + puntuacionFinal[0];
 
-            i++;
+// Agregar un espacio después de cada palabra traducida
+            if (resultado.length > 0 && !resultado.endsWith(' ')) {
+                resultado += ' ';
+            }
+            resultado += puntuacionInicial[0] + traduccion + puntuacionFinal[0];
         }
 
         return resultado;

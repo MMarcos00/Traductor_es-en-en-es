@@ -169,6 +169,22 @@ body::before {
     position: relative;
     z-index: 1;
   }
+  /* Modo oscuro */
+  .modo-oscuro .glass-effect {
+    background: rgba(30, 30, 50, 0.9);
+    color: #e0e0e0;
+  }
+
+  .modo-oscuro .input-area {
+    background: rgba(40, 40, 60, 0.8);
+    color: #e0e0e0;
+    border-color: #555;
+  }
+
+  .modo-oscuro .panel-title {
+    color: #e0e0e0;
+    border-color: #7c3aed;
+  }
 
   .btn-primary {
     @apply px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold

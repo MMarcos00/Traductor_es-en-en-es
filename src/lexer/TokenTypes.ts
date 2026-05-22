@@ -136,7 +136,10 @@ export const PALABRAS_CLAVE: Record<string, CategoriaGramatical> = {
     'even': CategoriaGramatical.ADVERBIO,
     'incluso': CategoriaGramatical.ADVERBIO,
     'not': CategoriaGramatical.ADVERBIO,
-    'no': CategoriaGramatical.ADVERBIO
+    'no': CategoriaGramatical.ADVERBIO,
+    'hola': CategoriaGramatical.ADVERBIO,
+    'hello': CategoriaGramatical.ADVERBIO,
+    'hi': CategoriaGramatical.ADVERBIO
 };
 
 export const VERBOS_INGLES = [
@@ -253,7 +256,8 @@ export const SUSTANTIVOS_INGLES = [
     'salt', 'pepper', 'soup', 'salad', 'cake', 'chocolate', 'pizza',
     'sandwich', 'doctor', 'nurse', 'hospital', 'police', 'firefighter',
     'kitchen', 'bathroom', 'bedroom', 'garden', 'window', 'table', 'chair',
-    'bed', 'picture', 'newspaper', 'magazine', 'letter', 'email', 'message'
+    'bed', 'picture', 'newspaper', 'magazine', 'letter', 'email', 'message',
+    'juan', 'maria', 'john', 'mary', 'peter', 'name'
 ];
 
 export const SUSTANTIVOS_ESPANOL = [
@@ -280,7 +284,8 @@ export const SUSTANTIVOS_ESPANOL = [
     'sal', 'pimienta', 'sopa', 'ensalada', 'pastel', 'chocolate', 'pizza',
     'sándwich', 'doctor', 'enfermera', 'hospital', 'policía', 'bombero',
     'cocina', 'baño', 'dormitorio', 'jardín', 'ventana', 'mesa', 'silla',
-    'cama', 'foto', 'periódico', 'revista', 'carta', 'correo', 'mensaje'
+    'cama', 'foto', 'periódico', 'revista', 'carta', 'correo', 'mensaje','juan',
+    'maria', 'pedro', 'ana', 'carlos', 'luis', 'nombre'
 ];
 
 export const SIGNOS_PUNTUACION = ['.', ',', '!', '?', ';', ':'];

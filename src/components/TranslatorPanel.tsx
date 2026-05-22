@@ -13,6 +13,7 @@ const TranslatorPanel: React.FC = () => {
     const [traductor] = useState(() => new Translator());
     const [hablando, setHablando] = useState(false);
     const [mostrarInfo, setMostrarInfo] = useState(false);
+    const [modoOscuro, setModoOscuro] = useState(true);
 
     const handleTraducir = () => {
         if (!textoEntrada.trim()) return;
@@ -26,7 +27,20 @@ const TranslatorPanel: React.FC = () => {
             setCargando(false);
         }, 500);
     };
+    const handleCargarArchivo = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const archivo = event.target.files?.[0];
+        if (!archivo) return;
 
+        const lector = new FileReader();
+        lector.onload = (e) => {
+            const contenido = e.target?.result as string;
+            setTextoEntrada(contenido);
+        };
+        lector.readAsText(archivo);
+
+        // Limpiar el input para permitir cargar el mismo archivo de nuevo
+        event.target.value = '';
+    };
     const handleTextoVoz = (texto: string) => {
         setTextoEntrada(texto);
     };
@@ -79,19 +93,26 @@ const TranslatorPanel: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
+        <div className={`min-h-screen p-4 md:p-8 transition-all duration-500 ${
+            modoOscuro
+                ? 'bg-gradient-to-br from-gray-900 via-purple-950 to-gray-900'
+                : 'bg-gradient-to-br from-blue-50 via-white to-purple-50'
+        }`}>
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8 animate-fadeIn">
-                    <div className="flex items-center justify-center gap-4 mb-4">
-                        <div className="text-6xl animate-bounce">🌐</div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                            Traductor Compilador
-                        </h1>
-                        <div className="text-6xl animate-bounce">🌐</div>
+                    <div className="flex items-center justify-center gap-4 mb-2">
+                        <div className="text-6xl animate-bounce">⚒️</div>
+                        <div>
+                            <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-red-500 to-purple-600">
+                                WordFORGE
+                            </h1>
+
+                        </div>
+                        <div className="text-6xl animate-bounce">⚒️</div>
                     </div>
-                    <p className="text-gray-600 text-lg">
-                        Simulacion de Compilador • Ingles ↔ Espanol
+                    <p className="text-gray-500 text-sm md:text-base text-center italic">
+                        "Forjando palabras, compilando significados"
                     </p>
                 </div>
 
@@ -105,6 +126,23 @@ const TranslatorPanel: React.FC = () => {
                                     {direccion === 'en-es' ? 'Ingles' : 'Espanol'}
                                 </label>
                                 <div className="flex items-center gap-2">
+                                    {/* Boton cargar archivo .txt */}
+                                    <label
+                                        className="p-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-md hover:shadow-lg transition-all cursor-pointer"
+                                        title="Cargar archivo .txt"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        <input
+                                            type="file"
+                                            accept=".txt"
+                                            onChange={handleCargarArchivo}
+                                            className="hidden"
+                                            disabled={cargando}
+                                        />
+                                    </label>
                                     <button
                                         onClick={handleEscucharOriginal}
                                         disabled={!textoEntrada.trim() || hablando}
@@ -223,7 +261,24 @@ const TranslatorPanel: React.FC = () => {
                         />
                     </div>
                 )}
-
+                {/* Boton Modo Oscuro/Claro */}
+                <button
+                    onClick={() => setModoOscuro(!modoOscuro)}
+                    className="fixed bottom-6 left-6 bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 z-50"
+                    title={modoOscuro ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Oscuro'}
+                >
+                    {modoOscuro ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    )}
+                </button>
                 {/* Boton de Informacion */}
                 <button
                     onClick={() => setMostrarInfo(true)}
@@ -297,8 +352,6 @@ const TranslatorPanel: React.FC = () => {
                                     <div className="space-y-3">
                                         {[
                                             'KEVEN RYAN LOPEZ PINEDA',
-                                            'CARLOS DANIEL RAMOS MORAN',
-                                            'LUIS EMILIO FLORES CASTILLO',
                                             'LUIS ALFONSO MORAN JUAREZ',
                                             'MARCOS EMANUEL MENDEZ ORTEGA'
                                         ].map((nombre, index) => (
