@@ -99,8 +99,8 @@ const ParseTree: React.FC<ParseTreeProps> = ({ arbol }) => {
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
                 Arbol de Derivacion Sintactica
             </h3>
-            <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto p-4">
-                <svg ref={svgRef} className="w-full" style={{ minHeight: '400px' }}></svg>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-auto p-4" style={{ WebkitOverflowScrolling: 'touch' }}>
+                <svg ref={svgRef} style={{ minHeight: '400px', minWidth: '600px' }}></svg>
             </div>
         </div>
     );

@@ -22,6 +22,7 @@ const TranslatorPanel: React.FC = () => {
 
         setTimeout(() => {
             const resultado = traductor.traducir(textoEntrada, direccion);
+            console.log('Tokens:', resultado.tokens.map(t => t.tipo).join(' '));
             setTextoTraducido(resultado.textoTraducido);
             setResultadoAnalisis(resultado);
             setCargando(false);

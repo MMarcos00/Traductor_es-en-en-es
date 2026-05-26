@@ -83,6 +83,11 @@ export class SemanticAnalyzer {
     }
 
     private verificarElementosObligatorios(tokens: TokenLexico[]): void {
+        // Si es una sola palabra (saludo, interjeccion), no exigir sujeto y verbo
+        if (tokens.length === 1 || (tokens.length === 2 && tokens[1].categoria === CategoriaGramatical.PUNTUACION)) {
+            return;
+        }
+
         const tieneSujeto = tokens.some(t =>
             t.categoria === CategoriaGramatical.PRONOMBRE ||
             t.categoria === CategoriaGramatical.SUSTANTIVO
@@ -91,16 +96,16 @@ export class SemanticAnalyzer {
         const tieneVerbo = tokens.some(t => t.categoria === CategoriaGramatical.VERBO);
 
         if (!tieneSujeto) {
-            this.erroresSemanticos.push('La oración no tiene sujeto explícito');
+            this.erroresSemanticos.push('La oracion no tiene sujeto explicito');
         }
         if (!tieneVerbo) {
-            this.erroresSemanticos.push('La oración no tiene verbo');
+            this.erroresSemanticos.push('La oracion no tiene verbo');
         }
 
-        // Verificar que no termine en preposición
+        // Verificar que no termine en preposicion
         const ultimoToken = tokens[tokens.length - 1];
         if (ultimoToken && ultimoToken.categoria === CategoriaGramatical.PREPOSICION) {
-            this.erroresSemanticos.push('La oración no debe terminar con una preposición');
+            this.erroresSemanticos.push('La oracion no debe terminar con una preposicion');
         }
     }
 }
