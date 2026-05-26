@@ -17,6 +17,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTextoReconocido, idioma, esta
 
     const iniciarReconocimiento = useCallback(() => {
         setError(null);
+        window.dispatchEvent(new CustomEvent('pausarMusica'));
 
         if (!SpeechRecognitionAPI) {
             setError('Reconocimiento de voz no soportado. Use Chrome.');
@@ -54,6 +55,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onTextoReconocido, idioma, esta
             reconocimiento.onend = () => {
                 setEscuchando(false);
                 reconocimientoRef.current = null;
+                window.dispatchEvent(new CustomEvent('reanudarMusica'));
             };
 
             reconocimiento.onstart = () => {

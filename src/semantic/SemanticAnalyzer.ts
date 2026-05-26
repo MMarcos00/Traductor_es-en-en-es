@@ -59,14 +59,20 @@ export class SemanticAnalyzer {
     }
 
     private verificarCoherencia(tokens: TokenLexico[]): void {
-        // Verificar palabras repetidas
+        // Verificar palabras repetidas (solo si se repiten mas de 2 veces en la misma oracion)
         const palabras = tokens.map(t => t.valor.toLowerCase());
-        const repetidas = palabras.filter((palabra, index) =>
-            palabras.indexOf(palabra) !== index && palabra.length > 2
-        );
+        const conteo: Record<string, number> = {};
 
-        if (repetidas.length > 0) {
-            this.advertencias.push(`Palabras repetidas: ${[...new Set(repetidas)].join(', ')}`);
+        palabras.forEach(p => {
+            if (p.length > 2) {
+                conteo[p] = (conteo[p] || 0) + 1;
+            }
+        });
+
+        const repetidasExcesivas = Object.keys(conteo).filter(p => conteo[p] > 2);
+
+        if (repetidasExcesivas.length > 0) {
+            this.advertencias.push(`Palabras repetidas excesivamente: ${repetidasExcesivas.join(', ')}`);
         }
 
         // Verificar combinaciones ilógicas

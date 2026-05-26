@@ -139,7 +139,10 @@ export const PALABRAS_CLAVE: Record<string, CategoriaGramatical> = {
     'no': CategoriaGramatical.ADVERBIO,
     'hola': CategoriaGramatical.ADVERBIO,
     'hello': CategoriaGramatical.ADVERBIO,
-    'hi': CategoriaGramatical.ADVERBIO
+    'hi': CategoriaGramatical.ADVERBIO,
+    'how': CategoriaGramatical.ADVERBIO,
+    'cómo': CategoriaGramatical.ADVERBIO,
+    'como': CategoriaGramatical.ADVERBIO
 };
 
 export const VERBOS_INGLES = [

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import VoiceInput from './VoiceInput';
 import AnalysisTabs from './AnalysisTabs';
 import { Translator } from '../translator/Translator';
@@ -14,6 +14,29 @@ const TranslatorPanel: React.FC = () => {
     const [hablando, setHablando] = useState(false);
     const [mostrarInfo, setMostrarInfo] = useState(false);
     const [modoOscuro, setModoOscuro] = useState(true);
+    const [musicaActivada, setMusicaActivada] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    useEffect(() => {
+        const pausar = () => {
+            if (audioRef.current && musicaActivada) {
+                audioRef.current.pause();
+            }
+        };
+
+        const reanudar = () => {
+            if (audioRef.current && musicaActivada) {
+                audioRef.current.play();
+            }
+        };
+
+        window.addEventListener('pausarMusica', pausar);
+        window.addEventListener('reanudarMusica', reanudar);
+
+        return () => {
+            window.removeEventListener('pausarMusica', pausar);
+            window.removeEventListener('reanudarMusica', reanudar);
+        };
+    }, [musicaActivada]);
 
     const handleTraducir = () => {
         if (!textoEntrada.trim()) return;
@@ -59,17 +82,42 @@ const TranslatorPanel: React.FC = () => {
         setResultadoAnalisis(null);
     };
 
+    const handleToggleMusica = () => {
+        if (!audioRef.current) {
+            audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
+            audioRef.current.loop = true;
+            audioRef.current.volume = 0.7;
+        }
+
+        if (musicaActivada) {
+            audioRef.current.pause();
+            setMusicaActivada(false);
+        } else {
+            audioRef.current.play();
+            setMusicaActivada(true);
+        }
+    };
     const handleEscucharTraduccion = () => {
         if (!textoTraducido || hablando) return;
 
         if ('speechSynthesis' in window) {
+            // Pausar musica
+            window.dispatchEvent(new CustomEvent('pausarMusica'));
+
             const utterance = new SpeechSynthesisUtterance(textoTraducido);
             utterance.lang = direccion === 'en-es' ? 'es-ES' : 'en-US';
             utterance.rate = 0.9;
             utterance.pitch = 1;
             utterance.onstart = () => setHablando(true);
-            utterance.onend = () => setHablando(false);
-            utterance.onerror = () => setHablando(false);
+            utterance.onend = () => {
+                setHablando(false);
+                // Reanudar musica
+                window.dispatchEvent(new CustomEvent('reanudarMusica'));
+            };
+            utterance.onerror = () => {
+                setHablando(false);
+                window.dispatchEvent(new CustomEvent('reanudarMusica'));
+            };
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(utterance);
         } else {
@@ -81,13 +129,23 @@ const TranslatorPanel: React.FC = () => {
         if (!textoEntrada || hablando) return;
 
         if ('speechSynthesis' in window) {
+            // Pausar musica
+            window.dispatchEvent(new CustomEvent('pausarMusica'));
+
             const utterance = new SpeechSynthesisUtterance(textoEntrada);
             utterance.lang = direccion === 'en-es' ? 'en-US' : 'es-ES';
             utterance.rate = 0.9;
             utterance.pitch = 1;
             utterance.onstart = () => setHablando(true);
-            utterance.onend = () => setHablando(false);
-            utterance.onerror = () => setHablando(false);
+            utterance.onend = () => {
+                setHablando(false);
+                // Reanudar musica
+                window.dispatchEvent(new CustomEvent('reanudarMusica'));
+            };
+            utterance.onerror = () => {
+                setHablando(false);
+                window.dispatchEvent(new CustomEvent('reanudarMusica'));
+            };
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(utterance);
         }
@@ -262,6 +320,21 @@ const TranslatorPanel: React.FC = () => {
                         />
                     </div>
                 )}
+                {/* Boton Musica de Fondo */}
+                <button
+                    onClick={handleToggleMusica}
+                    className={`fixed bottom-24 left-6 p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 z-50 ${
+                        musicaActivada
+                            ? 'bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse'
+                            : 'bg-gradient-to-r from-gray-400 to-gray-500'
+                    } text-white`}
+                    title={musicaActivada ? 'Desactivar musica' : 'Activar musica relajante'}
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                              d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                </button>
                 {/* Boton Modo Oscuro/Claro */}
                 <button
                     onClick={() => setModoOscuro(!modoOscuro)}
